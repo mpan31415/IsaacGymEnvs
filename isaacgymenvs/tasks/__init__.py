@@ -53,6 +53,9 @@ from .allegro_kuka.allegro_kuka_throw import AllegroKukaThrow
 from .allegro_kuka.allegro_kuka_two_arms_regrasping import AllegroKukaTwoArmsRegrasping
 from .allegro_kuka.allegro_kuka_two_arms_reorientation import AllegroKukaTwoArmsReorientation
 
+from .allegro_franka.allegro_franka_two_arms_regrasping import AllegroFrankaTwoArmsRegrasping
+from .allegro_franka.allegro_franka_two_arms_reorientation import AllegroFrankaTwoArmsReorientation
+
 from .industreal.industreal_task_pegs_insert import IndustRealTaskPegsInsert
 from .industreal.industreal_task_gears_insert import IndustRealTaskGearsInsert
 
@@ -83,12 +86,25 @@ def resolve_allegro_kuka_two_arms(cfg, *args, **kwargs):
 
     return subtask_map[subtask_name](cfg, *args, **kwargs)
 
+def resolve_allegro_franka_two_arms(cfg, *args, **kwargs):
+    subtask_name: str = cfg["env"]["subtask"]
+    subtask_map = dict(
+        reorientation=AllegroFrankaTwoArmsReorientation,
+        regrasping=AllegroFrankaTwoArmsRegrasping,
+    )
+
+    if subtask_name not in subtask_map:
+        raise ValueError(f"Unknown subtask={subtask_name} in {subtask_map}")
+
+    return subtask_map[subtask_name](cfg, *args, **kwargs)
+
 
 # Mappings from strings to environments
 isaacgym_task_map = {
     "AllegroHand": AllegroHand,
     "AllegroKuka": resolve_allegro_kuka,
     "AllegroKukaTwoArms": resolve_allegro_kuka_two_arms,
+    "AllegroFrankaTwoArms": resolve_allegro_franka_two_arms,
     "AllegroHandManualDR": AllegroHandDextremeManualDR,
     "AllegroHandADR": AllegroHandDextremeADR,
     "Ant": Ant,
