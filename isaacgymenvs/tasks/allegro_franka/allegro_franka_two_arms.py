@@ -36,7 +36,7 @@ from typing import List, Tuple
 from isaacgym import gymapi, gymtorch, gymutil
 from torch import Tensor
 
-from isaacgymenvs.tasks.allegro_franka.allegro_franka_utils import DofParameters, populate_dof_properties
+from isaacgymenvs.tasks.allegro_franka.allegro_franka_utils import DofParameters, populate_bimanual_dof_properties
 from isaacgymenvs.tasks.base.vec_task import VecTask
 from isaacgymenvs.tasks.allegro_franka.generate_cuboids import (
     generate_big_cuboids,
@@ -60,10 +60,16 @@ class AllegroFrankaTwoArmsBase(VecTask):
         self.num_arms = self.cfg["env"]["numArms"]
         assert self.num_arms == 2, f"Only two arms supported, got {self.num_arms}"
 
-        self.arm_x_ofs = self.cfg["env"]["armXOfs"]
-        self.arm_y_ofs = self.cfg["env"]["armYOfs"]
+        self.table_x_ofs = self.cfg["env"]["tablePoseXOfs"]
+        self.table_y_ofs = self.cfg["env"]["tablePoseYOfs"]
+        self.table_z_ofs = self.cfg["env"]["tablePoseZOfs"]
 
-        # 4 joints for index, middle, ring, and thumb and 7 for franka arm
+        # define the number of robot base DOFs and Rigid Bodies, they are excluded for the bimanual manipulation task
+        # 2 * 4 = 8 caster wheels, 2 bogie, 2 driving wheels = total of 12 DOFs
+        self.num_base_dofs = 12
+        self.num_base_bodies = 13
+
+        # 4 joints for index, middle, ring, and thumb; 7 for franka arm
         self.num_arm_dofs = 7
         self.num_finger_dofs = 4
         self.num_allegro_fingertips = 4
@@ -153,17 +159,21 @@ class AllegroFrankaTwoArmsBase(VecTask):
             "ball": "urdf/objects/ball.urdf",
         }
 
-        self.keypoints_offsets = self._object_keypoint_offsets()
+        self.keypoints_offsets = self._object_keypoint_offsets()                            # list of 4 [3-vecs], each is a object keypoint pos
 
         self.num_keypoints = len(self.keypoints_offsets)
 
-        self.allegro_fingertips = ["index_link_3", "middle_link_3", "ring_link_3", "thumb_link_3"]
+        # allegro fingertip links
+        # same order as the loaded asset by gymapi (index, middle, ring, thumb)
+        self.allegro_fingertips = ["link_l15.0", "link_l7.0", "link_l11.0", "link_l3.0",    # left hand
+                                   "link_3.0", "link_15.0", "link_7.0", "link_11.0"]        # right hand
         self.fingertip_offsets = np.array(
             [[0.05, 0.005, 0], [0.05, 0.005, 0], [0.05, 0.005, 0], [0.06, 0.005, 0]], dtype=np.float32
         )
         palm_offset = np.array([-0.00, -0.02, 0.16], dtype=np.float32)
 
-        self.num_fingertips = len(self.allegro_fingertips)
+        # set to 4 fingertips for each hand
+        self.num_fingertips = int(len(self.allegro_fingertips) / 2)
 
         # can be only "full_state"
         self.obs_type = self.cfg["env"]["observationType"]
@@ -257,17 +267,14 @@ class AllegroFrankaTwoArmsBase(VecTask):
         # create some wrapper tensors for different slices
         self.dof_state = gymtorch.wrap_tensor(dof_state_tensor)
 
+        # set default pose for both arms + hands
         self.hand_arm_default_dof_pos = torch.zeros(
             [self.num_arms, self.num_hand_arm_dofs], dtype=torch.float, device=self.device
         )
 
-        desired_franka_pos = torch.tensor([-1.571, 1.571, -0.000, 1.6, -0.000, 1.485, 2.358])  # pose v1
-        # desired_franka_pos = torch.tensor([-2.135, 0.843, 1.786, -0.903, -2.262, 1.301, -2.791])  # pose v2
-        self.hand_arm_default_dof_pos[0, :7] = desired_franka_pos
-
-        desired_franka_pos = torch.tensor([-1.571, 1.571, -0.000, 1.6, -0.000, 1.485, 2.358])  # pose v1
-        # desired_franka_pos = torch.tensor([-2.135, 0.843, 1.786, -0.903, -2.262, 1.301, -2.791])  # pose v2
-        self.hand_arm_default_dof_pos[1, :7] = desired_franka_pos
+        franka_home_pos = torch.tensor([0.0, -math.pi/8, 0.0, -5*math.pi/8, 0.0, math.pi/2, math.pi/4])         # home position
+        self.hand_arm_default_dof_pos[0, :7] = franka_home_pos
+        self.hand_arm_default_dof_pos[1, :7] = franka_home_pos
 
         self.pos_noise_coeff = torch.zeros_like(self.hand_arm_default_dof_pos, device=self.device)
         self.pos_noise_coeff[:, 0:7] = self.reset_dof_pos_noise_arm
@@ -280,6 +287,7 @@ class AllegroFrankaTwoArmsBase(VecTask):
         self.arm_hand_dof_pos = self.arm_hand_dof_state[..., 0]
         self.arm_hand_dof_vel = self.arm_hand_dof_state[..., 1]
 
+        # size of rigid body state: pos(3) + quat(4) + vel(3) + angvel(3) = 13
         self.rigid_body_states = gymtorch.wrap_tensor(rigid_body_tensor).view(self.num_envs, -1, 13)
         self.num_bodies = self.rigid_body_states.shape[1]
 
@@ -389,15 +397,12 @@ class AllegroFrankaTwoArmsBase(VecTask):
     def _object_keypoint_offsets(self):
         raise NotImplementedError()
 
-    def _object_start_pose(self, arms_y_ofs: float, table_pose_dy: float, table_pose_dz: float):
+    def _object_start_pose(self, table_pose_dx: float, table_pose_dy: float, table_pose_dz: float):
         object_start_pose = gymapi.Transform()
         object_start_pose.p = gymapi.Vec3()
-        object_start_pose.p.x = 0.0
-
-        pose_dy, pose_dz = table_pose_dy, table_pose_dz + 0.25
-
-        object_start_pose.p.y = arms_y_ofs + pose_dy
-        object_start_pose.p.z = pose_dz
+        object_start_pose.p.x = table_pose_dx
+        object_start_pose.p.y = table_pose_dy
+        object_start_pose.p.z = table_pose_dz + 0.25
 
         return object_start_pose
 
@@ -434,7 +439,7 @@ class AllegroFrankaTwoArmsBase(VecTask):
         )  # assuming all of them have the same rb count
         return object_assets, object_rb_count, object_shapes_count
 
-    def _load_additional_assets(self, object_asset_root, arm_y_offset: float) -> Tuple[int, int]:
+    def _load_additional_assets(self, object_asset_root, robot_base_pose) -> Tuple[int, int]:
         """
         returns: tuple (num_rigid_bodies, num_shapes)
         """
@@ -561,60 +566,59 @@ class AllegroFrankaTwoArmsBase(VecTask):
         allegro_franka_asset = self.gym.load_asset(self.sim, asset_root, self.hand_arm_asset_file, asset_options)
         print(f"Loaded asset {allegro_franka_asset}")
 
-        num_hand_arm_bodies = self.gym.get_asset_rigid_body_count(allegro_franka_asset)
-        num_hand_arm_shapes = self.gym.get_asset_rigid_shape_count(allegro_franka_asset)
-        num_hand_arm_dofs = self.gym.get_asset_dof_count(allegro_franka_asset)
+        # read rigid bodies, shapes, and DOFs from the loaded URDF asset
+        asset_num_total_bodies = self.gym.get_asset_rigid_body_count(allegro_franka_asset)
+        asset_num_hand_arm_bodies = asset_num_total_bodies - self.num_base_bodies
+
+        asset_num_total_shapes = self.gym.get_asset_rigid_shape_count(allegro_franka_asset)
+
+        asset_num_total_dofs = self.gym.get_asset_dof_count(allegro_franka_asset)
+        asset_num_hand_arm_dofs = asset_num_total_dofs - self.num_base_dofs
+
+        print("=" * 100)
+        print("[MY INFO] ============= from asset file =============")
+        print("[MY INFO] Number of total rigid bodies:", asset_num_total_bodies)
+        print("[MY INFO] Number of hand arm rigid bodies:", asset_num_hand_arm_bodies)
+        print("[MY INFO] Number of total rigid shapes:", asset_num_total_shapes)
+        print("[MY INFO] Number of total DOFs:", asset_num_total_dofs)
+        print("[MY INFO] Number of hand arm DOFs:", asset_num_hand_arm_dofs)
+        print("=" * 100)
+
+        # self.num_hand_arm_dofs is defined for a single arm+hand, therefore = 7 + 16 = 23
         assert (
-            self.num_hand_arm_dofs == num_hand_arm_dofs
-        ), f"Number of DOFs in asset {allegro_franka_asset} is {num_hand_arm_dofs}, but {self.num_hand_arm_dofs} was expected"
+            self.num_hand_arm_dofs * self.num_arms == asset_num_hand_arm_dofs
+        ), f"Number of Hand Arm DOFs in asset is {asset_num_hand_arm_dofs}, but {self.num_hand_arm_dofs * self.num_arms} was expected"
 
-        max_agg_bodies = all_arms_bodies = num_hand_arm_bodies * self.num_arms
-        max_agg_shapes = all_arms_shapes = num_hand_arm_shapes * self.num_arms
-
-        allegro_rigid_body_names = [
-            self.gym.get_asset_rigid_body_name(allegro_franka_asset, i) for i in range(num_hand_arm_bodies)
-        ]
-        print(f"Allegro num rigid bodies: {num_hand_arm_bodies}")
-        print(f"Allegro rigid bodies: {allegro_rigid_body_names}")
+        max_agg_bodies = asset_num_total_bodies
+        all_arms_bodies = asset_num_hand_arm_bodies
+        max_agg_shapes = asset_num_total_shapes
 
         # allegro_actuated_dof_names = [self.gym.get_asset_actuator_joint_name(allegro_asset, i) for i in range(self.num_allegro_dofs)]
         # self.allegro_actuated_dof_indices = [self.gym.find_asset_dof_index(allegro_asset, name) for name in allegro_actuated_dof_names]
 
-        hand_arm_dof_props = self.gym.get_asset_dof_properties(allegro_franka_asset)
+        # load DOF properties from asset
+        all_dof_props = self.gym.get_asset_dof_properties(allegro_franka_asset)
+        hand_arm_dof_props = all_dof_props[self.num_base_dofs:]
 
-        arm_hand_dof_lower_limits = []
-        arm_hand_dof_upper_limits = []
-
-        for arm_idx in range(self.num_arms):
-            for i in range(self.num_hand_arm_dofs):
-                arm_hand_dof_lower_limits.append(hand_arm_dof_props["lower"][i])
-                arm_hand_dof_upper_limits.append(hand_arm_dof_props["upper"][i])
+        arm_hand_dof_lower_limits = hand_arm_dof_props["lower"]
+        arm_hand_dof_upper_limits = hand_arm_dof_props["upper"]
 
         # self.allegro_actuated_dof_indices = to_torch(self.allegro_actuated_dof_indices, dtype=torch.long, device=self.device)
         self.arm_hand_dof_lower_limits = to_torch(arm_hand_dof_lower_limits, device=self.device)
         self.arm_hand_dof_upper_limits = to_torch(arm_hand_dof_upper_limits, device=self.device)
 
-        arm_poses = [gymapi.Transform() for _ in range(self.num_arms)]
-        arm_x_ofs, arm_y_ofs = self.arm_x_ofs, self.arm_y_ofs
-        for arm_idx, arm_pose in enumerate(arm_poses):
-            x_ofs = arm_x_ofs * (-1 if arm_idx == 0 else 1)
-            arm_pose.p = gymapi.Vec3(*get_axis_params(0.0, self.up_axis_idx)) + gymapi.Vec3(x_ofs, arm_y_ofs, 0)
+        # define the robot base pose in world frame
+        robot_base_pose = gymapi.Transform()
+        robot_base_pose.p = gymapi.Vec3(0.0, 0.0, 0.0)            # origin
+        robot_base_pose.r = gymapi.Quat(0.0, 0.0, 0.0, 1.0)       # no rotation
 
-            # arm_pose.r = gymapi.Quat(0.0, 0.0, 0.0, 1.0)
-            if arm_idx == 0:
-                # rotate 1st arm 90 degrees to the left
-                arm_pose.r = gymapi.Quat.from_axis_angle(gymapi.Vec3(0, 0, 1), math.pi / 2)
-            else:
-                # rotate 2nd arm 90 degrees to the right
-                arm_pose.r = gymapi.Quat.from_axis_angle(gymapi.Vec3(0, 0, 1), -math.pi / 2)
-
+        ############################## OBJECTS ##############################
         object_assets, object_rb_count, object_shapes_count = self._load_main_object_asset()
-        print("=" * 100)
         print("[MY INFO] Loaded", len(object_assets), "object assets")
-        print("=" * 100)
         max_agg_bodies += object_rb_count
         max_agg_shapes += object_shapes_count
 
+        ############################## TABLE ##############################
         # load auxiliary objects
         table_asset_options = gymapi.AssetOptions()
         table_asset_options.disable_gravity = False
@@ -623,80 +627,80 @@ class AllegroFrankaTwoArmsBase(VecTask):
 
         table_pose = gymapi.Transform()
         table_pose.p = gymapi.Vec3()
-        table_pose.p.x = 0.0
-        # table_pose_dy, table_pose_dz = -0.8, 0.38
-        table_pose_dy, table_pose_dz = 0.0, 0.38
-        table_pose.p.y = arm_y_ofs + table_pose_dy
-        table_pose.p.z = table_pose_dz
+        table_pose.p.x = self.table_x_ofs
+        table_pose.p.y = self.table_y_ofs
+        table_pose.p.z = self.table_z_ofs
+        table_pose.r = gymapi.Quat.from_axis_angle(gymapi.Vec3(0, 0, 1), -math.pi / 2)    # rotate 90 degrees clockwise
 
         table_rb_count = self.gym.get_asset_rigid_body_count(table_asset)
         table_shapes_count = self.gym.get_asset_rigid_shape_count(table_asset)
         max_agg_bodies += table_rb_count
         max_agg_shapes += table_shapes_count
 
-        additional_rb, additional_shapes = self._load_additional_assets(object_asset_root, arm_y_ofs)
+        additional_rb, additional_shapes = self._load_additional_assets(object_asset_root, robot_base_pose)
         max_agg_bodies += additional_rb
         max_agg_shapes += additional_shapes
 
         # set up object and goal positions
-        self.object_start_pose = self._object_start_pose(arm_y_ofs, table_pose_dy, table_pose_dz)
+        self.object_start_pose = self._object_start_pose(self.table_x_ofs, self.table_y_ofs, self.table_z_ofs)
 
+        ### create environments ###
         self.envs = []
 
         object_init_state = []
         object_scales = []
         object_keypoint_offsets = []
 
-        allegro_palm_handle = self.gym.find_asset_rigid_body_index(allegro_franka_asset, "iiwa7_link_7")
-        fingertip_handles = [
+        self.allegro_palm_handles = [
+            self.gym.find_asset_rigid_body_index(allegro_franka_asset, "left_fr3_link7"),
+            self.gym.find_asset_rigid_body_index(allegro_franka_asset, "right_fr3_link7")
+        ]
+        self.allegro_fingertip_handles = [
             self.gym.find_asset_rigid_body_index(allegro_franka_asset, name) for name in self.allegro_fingertips
         ]
-
-        self.allegro_palm_handles = []
-        self.allegro_fingertip_handles = []
-        for arm_idx in range(self.num_arms):
-            self.allegro_palm_handles.append(allegro_palm_handle + arm_idx * num_hand_arm_bodies)
-            self.allegro_fingertip_handles.extend([h + arm_idx * num_hand_arm_bodies for h in fingertip_handles])
 
         # does this rely on the fact that objects are added right after the arms in terms of create_actor()?
         self.object_rb_handles = list(range(all_arms_bodies, all_arms_bodies + object_rb_count))
 
-        self.arm_indices = torch.empty([self.num_envs, self.num_arms], dtype=torch.long, device=self.device)
+        # self.arm_indices = torch.empty([self.num_envs, self.num_arms], dtype=torch.long, device=self.device)
+        self.robot_indices = torch.empty(self.num_envs, dtype=torch.long, device=self.device)
         self.object_indices = torch.empty(self.num_envs, dtype=torch.long, device=self.device)
 
         assert self.num_envs >= 1
 
-        print("=" * 100)
-        print("[MY INFO] Creating", len(self.num_envs), "environments ...")
-        print("=" * 100)
+        print("[MY INFO] Creating", self.num_envs, "environments ...")
 
-        for i in range(self.num_envs):
+        for env_idx in range(self.num_envs):
+
             # create env instance
             env_ptr = self.gym.create_env(self.sim, lower, upper, num_per_row)
 
+            # aggregation of rigid bodies and shapes for faster simulation
             self.gym.begin_aggregate(env_ptr, max_agg_bodies, max_agg_shapes, True)
 
-            # add arms
-            for arm_idx in range(self.num_arms):
-                arm = self.gym.create_actor(env_ptr, allegro_franka_asset, arm_poses[arm_idx], f"arm{arm_idx}", i, -1, 0)
+            # create the full robot (mobile base + arms)
+            robot = self.gym.create_actor(env_ptr, allegro_franka_asset, robot_base_pose, f"robot{env_idx}", env_idx, -1, 0)
 
-                populate_dof_properties(hand_arm_dof_props, self.dof_params, self.num_arm_dofs, self.num_hand_dofs)
+            # populate Hand Arm DOF properties 
+            populate_bimanual_dof_properties(hand_arm_dof_props, self.dof_params, self.num_arm_dofs, self.num_hand_dofs)
 
-                self.gym.set_actor_dof_properties(env_ptr, arm, hand_arm_dof_props)
-                allegro_hand_idx = self.gym.get_actor_index(env_ptr, arm, gymapi.DOMAIN_SIM)
+            # set only the Hand+Arm DOF properties
+            self.gym.set_actor_dof_properties(env_ptr, robot, hand_arm_dof_props)
 
-                self.arm_indices[i, arm_idx] = allegro_hand_idx
+            # save robot handle
+            robot_idx = self.gym.get_actor_index(env_ptr, robot, gymapi.DOMAIN_SIM)
+            self.robot_indices[env_idx] = robot_idx
 
             # add object
-            object_asset_idx = i % len(object_assets)
+            object_asset_idx = env_idx % len(object_assets)
             object_asset = object_assets[object_asset_idx]
 
             obj_pose = self.object_start_pose
-            object_handle = self.gym.create_actor(env_ptr, object_asset, obj_pose, "object", i, 0, 0)
+            object_handle = self.gym.create_actor(env_ptr, object_asset, obj_pose, "object", env_idx, 0, 0)
             pos, rot = obj_pose.p, obj_pose.r
             object_init_state.append([pos.x, pos.y, pos.z, rot.x, rot.y, rot.z, rot.w, 0, 0, 0, 0, 0, 0])
             object_idx = self.gym.get_actor_index(env_ptr, object_handle, gymapi.DOMAIN_SIM)
-            self.object_indices[i] = object_idx
+            self.object_indices[env_idx] = object_idx
 
             object_scale = self.object_asset_scales[object_asset_idx]
             object_scales.append(object_scale)
@@ -710,19 +714,17 @@ class AllegroFrankaTwoArmsBase(VecTask):
             object_keypoint_offsets.append(object_offsets)
 
             # table object
-            table_handle = self.gym.create_actor(env_ptr, table_asset, table_pose, "table_object", i, 0, 0)
+            table_handle = self.gym.create_actor(env_ptr, table_asset, table_pose, "table_object", env_idx, 0, 0)
             _table_object_idx = self.gym.get_actor_index(env_ptr, table_handle, gymapi.DOMAIN_SIM)
 
             # task-specific objects (i.e. goal object for reorientation task)
-            self._create_additional_objects(env_ptr, env_idx=i, object_asset_idx=object_asset_idx)
+            self._create_additional_objects(env_ptr, env_idx=env_idx, object_asset_idx=object_asset_idx)
 
             self.gym.end_aggregate(env_ptr)
 
             self.envs.append(env_ptr)
 
-        print("=" * 100)
-        print("[MY INFO] Created", len(self.envs), "environments")
-        print("=" * 100)
+        print("[MY INFO] Finished creating", len(self.envs), "environments")
 
         # we are not using new mass values after DR when calculating random forces applied to an object,
         # which should be ok as long as the randomization range is not too big
@@ -1238,8 +1240,8 @@ class AllegroFrankaTwoArmsBase(VecTask):
         # reset object
         self.reset_object_pose(env_ids)
 
-        # flattened list of arm actors that we need to reset
-        arm_indices = self.arm_indices[env_ids].to(torch.int32).flatten()
+        # list of robot indices that we need to reset
+        robot_indices = self.robot_indices[env_ids].to(torch.int32)
 
         # reset random force probabilities
         self.random_force_prob[env_ids] = torch.exp(
@@ -1269,13 +1271,13 @@ class AllegroFrankaTwoArmsBase(VecTask):
         )
         self.arm_hand_dof_vel[env_ids, :] = self.reset_dof_vel_noise * rand_vel_floats
 
-        arm_indices_gym = gymtorch.unwrap_tensor(arm_indices)
-        num_arm_indices: int = len(arm_indices)
+        robot_indices_gym = gymtorch.unwrap_tensor(robot_indices)
+        num_robot_indices: int = len(robot_indices)
         self.gym.set_dof_position_target_tensor_indexed(
-            self.sim, gymtorch.unwrap_tensor(self.prev_targets), arm_indices_gym, num_arm_indices
+            self.sim, gymtorch.unwrap_tensor(self.prev_targets), robot_indices_gym, num_robot_indices
         )
         self.gym.set_dof_state_tensor_indexed(
-            self.sim, gymtorch.unwrap_tensor(self.dof_state), arm_indices_gym, num_arm_indices
+            self.sim, gymtorch.unwrap_tensor(self.dof_state), robot_indices_gym, num_robot_indices
         )
 
         object_indices = [self.object_indices[env_ids]]

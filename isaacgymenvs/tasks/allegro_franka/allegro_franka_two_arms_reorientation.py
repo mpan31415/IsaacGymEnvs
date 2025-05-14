@@ -53,7 +53,7 @@ class AllegroFrankaTwoArmsReorientation(AllegroFrankaTwoArmsBase):
             [-1, -1, -1],
         ]
 
-    def _load_additional_assets(self, object_asset_root, arm_pose):
+    def _load_additional_assets(self, object_asset_root, robot_base_pose):
         object_asset_options = gymapi.AssetOptions()
         object_asset_options.disable_gravity = True
         self.goal_assets = []

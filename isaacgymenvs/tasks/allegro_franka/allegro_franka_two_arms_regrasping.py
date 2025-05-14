@@ -48,7 +48,7 @@ class AllegroFrankaTwoArmsRegrasping(AllegroFrankaTwoArmsBase):
         """Regrasping task uses only a single object keypoint since we do not care about object orientation."""
         return [[0, 0, 0]]
 
-    def _load_additional_assets(self, object_asset_root, arm_y_offset: float):
+    def _load_additional_assets(self, object_asset_root, robot_base_pose):
         goal_asset_options = gymapi.AssetOptions()
         goal_asset_options.disable_gravity = True
         self.goal_asset = self.gym.load_asset(
