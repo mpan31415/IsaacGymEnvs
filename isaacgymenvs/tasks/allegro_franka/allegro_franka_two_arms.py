@@ -683,11 +683,11 @@ class AllegroFrankaTwoArmsBase(VecTask):
             # create the full robot (mobile base + arms)
             robot = self.gym.create_actor(env_ptr, allegro_franka_asset, robot_base_pose, f"robot{env_idx}", env_idx, -1, 0)
 
-            # populate Hand Arm DOF properties 
-            populate_bimanual_dof_properties(hand_arm_dof_props, self.dof_params, self.num_arm_dofs, self.num_hand_dofs)
+            # update hand-arm DOF properties from config, freeze base DOFs
+            populate_bimanual_dof_properties(all_dof_props, self.dof_params, self.num_base_dofs, self.num_arm_dofs, self.num_hand_dofs)
 
-            # set only the Hand+Arm DOF properties
-            self.gym.set_actor_dof_properties(env_ptr, robot, hand_arm_dof_props)
+            # set the DOF properties for the robot
+            self.gym.set_actor_dof_properties(env_ptr, robot, all_dof_props)
 
             # save robot handle
             robot_idx = self.gym.get_actor_index(env_ptr, robot, gymapi.DOMAIN_SIM)

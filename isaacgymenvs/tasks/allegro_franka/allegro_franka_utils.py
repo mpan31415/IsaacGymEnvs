@@ -32,6 +32,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Tuple, Dict, List
 
+from isaacgym import gymapi
 from torch import Tensor
 
 
@@ -83,38 +84,45 @@ def populate_dof_properties(hand_arm_dof_props, params: DofParameters, arm_dofs:
     hand_arm_dof_props["armature"][arm_dofs:].fill(params.allegro_armature)
 
 
-def populate_bimanual_dof_properties(hand_arm_dof_props, params: DofParameters, arm_dofs: int, hand_dofs: int) -> None:
+def populate_bimanual_dof_properties(all_dof_props, params: DofParameters, base_dofs: int, arm_dofs: int, hand_dofs: int) -> None:
 
-    left_arm_start = 0
-    left_arm_end = left_hand_start = arm_dofs
-    left_hand_end = right_arm_start = arm_dofs + hand_dofs
-    right_arm_end = right_hand_start = arm_dofs + hand_dofs + arm_dofs
-    right_hand_end = arm_dofs + hand_dofs + arm_dofs + hand_dofs
+    base_start = 0
+    base_end = left_arm_start = base_start + base_dofs
+    left_arm_end = left_hand_start = left_arm_start + arm_dofs
+    left_hand_end = right_arm_start = left_hand_start + hand_dofs
+    right_arm_end = right_hand_start = right_arm_start + arm_dofs
+    right_hand_end = right_hand_start + hand_dofs
 
-    assert len(hand_arm_dof_props["stiffness"]) == (arm_dofs + hand_dofs) * 2
-    hand_arm_dof_props["stiffness"][left_arm_start:left_arm_end].fill(params.franka_stiffness)              # left arm
-    hand_arm_dof_props["stiffness"][right_arm_start:right_arm_end].fill(params.franka_stiffness)            # right arm
-    hand_arm_dof_props["stiffness"][left_hand_start:left_hand_end].fill(params.allegro_stiffness)           # left hand
-    hand_arm_dof_props["stiffness"][right_hand_start:right_hand_end].fill(params.allegro_stiffness)         # right hand
+    # unactuate base DOFs
+    all_dof_props[base_start:base_end]["stiffness"].fill(0.0)
+    all_dof_props[base_start:base_end]["damping"].fill(0.0)
+    all_dof_props[base_start:base_end]["driveMode"].fill(gymapi.DOF_MODE_NONE)
+
+    # update properties for arms and hands
+    assert len(all_dof_props["stiffness"]) == base_dofs + (arm_dofs + hand_dofs) * 2
+    all_dof_props["stiffness"][left_arm_start:left_arm_end].fill(params.franka_stiffness)              # left arm
+    all_dof_props["stiffness"][right_arm_start:right_arm_end].fill(params.franka_stiffness)            # right arm
+    all_dof_props["stiffness"][left_hand_start:left_hand_end].fill(params.allegro_stiffness)           # left hand
+    all_dof_props["stiffness"][right_hand_start:right_hand_end].fill(params.allegro_stiffness)         # right hand
 
     assert len(params.franka_effort) == arm_dofs
-    hand_arm_dof_props["effort"][left_arm_start:left_arm_end] = params.franka_effort
-    hand_arm_dof_props["effort"][right_arm_start:right_arm_end] = params.franka_effort
-    hand_arm_dof_props["effort"][left_hand_start:left_hand_end].fill(params.allegro_effort)
-    hand_arm_dof_props["effort"][right_hand_start:right_hand_end].fill(params.allegro_effort)
+    all_dof_props["effort"][left_arm_start:left_arm_end] = params.franka_effort
+    all_dof_props["effort"][right_arm_start:right_arm_end] = params.franka_effort
+    all_dof_props["effort"][left_hand_start:left_hand_end].fill(params.allegro_effort)
+    all_dof_props["effort"][right_hand_start:right_hand_end].fill(params.allegro_effort)
 
-    hand_arm_dof_props["damping"][left_arm_start:left_arm_end].fill(params.franka_damping)
-    hand_arm_dof_props["damping"][right_arm_start:right_arm_end].fill(params.franka_damping)
-    hand_arm_dof_props["damping"][left_hand_start:left_hand_end].fill(params.allegro_damping)
-    hand_arm_dof_props["damping"][right_hand_start:right_hand_end].fill(params.allegro_damping)
+    all_dof_props["damping"][left_arm_start:left_arm_end].fill(params.franka_damping)
+    all_dof_props["damping"][right_arm_start:right_arm_end].fill(params.franka_damping)
+    all_dof_props["damping"][left_hand_start:left_hand_end].fill(params.allegro_damping)
+    all_dof_props["damping"][right_hand_start:right_hand_end].fill(params.allegro_damping)
 
     if params.dof_friction >= 0:
-        hand_arm_dof_props["friction"].fill(params.dof_friction)
+        all_dof_props["friction"].fill(params.dof_friction)
 
-    hand_arm_dof_props["armature"][left_arm_start:left_arm_end].fill(params.franka_armature)
-    hand_arm_dof_props["armature"][right_arm_start:right_arm_end].fill(params.franka_armature)
-    hand_arm_dof_props["armature"][left_hand_start:left_hand_end].fill(params.allegro_armature)
-    hand_arm_dof_props["armature"][right_hand_start:right_hand_end].fill(params.allegro_armature)
+    all_dof_props["armature"][left_arm_start:left_arm_end].fill(params.franka_armature)
+    all_dof_props["armature"][right_arm_start:right_arm_end].fill(params.franka_armature)
+    all_dof_props["armature"][left_hand_start:left_hand_end].fill(params.allegro_armature)
+    all_dof_props["armature"][right_hand_start:right_hand_end].fill(params.allegro_armature)
 
 
 def tolerance_curriculum(
