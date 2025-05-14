@@ -894,7 +894,7 @@
       <!-- These values were determined empirically -->
       <origin rpy="0 0 -1.5707963267948966" xyz="0 0.07615 -0.0325"/>
       <geometry>
-        <mesh filename="file:///workspaces/install/franka_description/share/franka_description/meshes/nanoscan3/NANS3.dae"/>
+        <mesh filename="../meshes_obj/nanoscan3/NANS3.dae"/>
       </geometry>
       <material name="black">
         <color rgba="0.0 0.0 0.0 1.0"/>
@@ -904,7 +904,7 @@
       <!-- These values were determined empirically -->
       <origin rpy="0 0 -1.5707963267948966" xyz="0 0.07615 -0.0325"/>
       <geometry>
-        <mesh filename="file:///workspaces/install/franka_description/share/franka_description/meshes/nanoscan3/NANS3_collision.stl"/>
+        <mesh filename="../meshes_obj/nanoscan3/NANS3_collision.stl"/>
       </geometry>
     </collision>
   </link>
@@ -971,7 +971,7 @@
       <!-- These values were determined empirically -->
       <origin rpy="0 0 -1.5707963267948966" xyz="0 0.07615 -0.0325"/>
       <geometry>
-        <mesh filename="file:///workspaces/install/franka_description/share/franka_description/meshes/nanoscan3/NANS3.dae"/>
+        <mesh filename="../meshes_obj/nanoscan3/NANS3.dae"/>
       </geometry>
       <material name="black">
         <color rgba="0.0 0.0 0.0 1.0"/>
@@ -981,7 +981,7 @@
       <!-- These values were determined empirically -->
       <origin rpy="0 0 -1.5707963267948966" xyz="0 0.07615 -0.0325"/>
       <geometry>
-        <mesh filename="file:///workspaces/install/franka_description/share/franka_description/meshes/nanoscan3/NANS3_collision.stl"/>
+        <mesh filename="../meshes_obj/nanoscan3/NANS3_collision.stl"/>
       </geometry>
     </collision>
   </link>
@@ -1042,7 +1042,7 @@
       <origin rpy="1.5707963267948966 0 1.5707963267948966" xyz="0.0046500000000000005 -0.0475 0"/>
       <geometry>
         <!-- <box size="${d455_cam_depth} ${d455_cam_width} ${d455_cam_height}"/> -->
-        <mesh filename="file:///opt/ros/humble/share/realsense2_description/meshes/d455.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="../../realsense2_description/meshes/d455.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="aluminum"/>
     </visual>
@@ -1078,7 +1078,7 @@
       <origin rpy="1.5707963267948966 0 1.5707963267948966" xyz="0.0046500000000000005 -0.0475 0"/>
       <geometry>
         <!-- <box size="${d455_cam_depth} ${d455_cam_width} ${d455_cam_height}"/> -->
-        <mesh filename="file:///opt/ros/humble/share/realsense2_description/meshes/d455.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="../../realsense2_description/meshes/d455.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="aluminum"/>
     </visual>
@@ -1114,7 +1114,7 @@
       <origin rpy="1.5707963267948966 0 1.5707963267948966" xyz="0.0046500000000000005 -0.0475 0"/>
       <geometry>
         <!-- <box size="${d455_cam_depth} ${d455_cam_width} ${d455_cam_height}"/> -->
-        <mesh filename="file:///opt/ros/humble/share/realsense2_description/meshes/d455.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="../../realsense2_description/meshes/d455.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="aluminum"/>
     </visual>
@@ -1150,7 +1150,7 @@
       <origin rpy="1.5707963267948966 0 1.5707963267948966" xyz="0.0046500000000000005 -0.0475 0"/>
       <geometry>
         <!-- <box size="${d455_cam_depth} ${d455_cam_width} ${d455_cam_height}"/> -->
-        <mesh filename="file:///opt/ros/humble/share/realsense2_description/meshes/d455.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="../../realsense2_description/meshes/d455.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="aluminum"/>
     </visual>
@@ -2014,7 +2014,7 @@
       <geometry>
         <mesh filename="../allegro/meshes/allegro/base_link_left.obj"/>
       </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0 "/>
+      <origin rpy="-1.5707963259 0 0" xyz="0 0 0 "/>
       <material name="black">
         <color rgba="0.2 0.2 0.2 1"/>
       </material>
@@ -2033,7 +2033,7 @@
     </inertial>
   </link>
   <joint name="hand_left_joint" type="fixed">
-    <origin rpy="0 0 0.785398" xyz="0 0 0.092"/>
+    <origin rpy="0 0 -2.35619" xyz="0 0 0.092"/>
     <parent link="left_fr3_link8"/>
     <child link="base_link_lhand"/>
   </joint>
@@ -2067,7 +2067,7 @@
     </collision>
   </link>
   <joint name="joint_l__0.0" type="revolute">
-    <axis xyz="0 0 1"/>
+    <axis xyz="0 0 -1"/>
     <limit effort="0" lower="-0.47" upper="0.47" velocity="10"/>
     <parent link="base_link_lhand"/>
     <child link="link_l0.0"/>
@@ -2204,7 +2204,7 @@
     </collision>
   </link>
   <joint name="joint_l_4.0" type="revolute">
-    <axis xyz="0 0 1"/>
+    <axis xyz="0 0 -1"/>
     <limit effort="0" lower="-0.47" upper="0.47" velocity="10"/>
     <parent link="base_link_lhand"/>
     <child link="link_l4.0"/>
@@ -2346,7 +2346,7 @@
 
   </link>
   <joint name="joint_l_8.0" type="revolute">
-    <axis xyz="0 0 1"/>
+    <axis xyz="0 0 -1"/>
     <limit effort="0" lower="-0.47" upper="0.47" velocity="10"/>
     <parent link="base_link_lhand"/>
     <child link="link_l8.0"/>
@@ -2469,35 +2469,37 @@
     <inertial>
       <mass value="0.0176"/>
       <origin rpy="0 0 0" xyz="0 0 0"/>
-      <inertia ixx="1.89273333333e-5" ixy="7.16716e-06" ixz="5.35568e-06" iyy="1.43008213333e-05" iyz="6.8068e-06" izz="1.89273333333e-05"/>
+      <inertia ixx="1.89273333333e-5" ixy="-7.16716e-06" ixz="5.35568e-06" iyy="1.43008213333e-05" iyz="-6.8068e-06" izz="1.89273333333e-05"/>
     </inertial>
 
     <visual>
       <geometry>
         <!-- RIGHT -->
-        <mesh filename="../allegro/meshes/allegro/link_12.0_right.obj"/>
+        <!-- <mesh filename="../allegro/meshes/allegro/link_12.0_right.obj"/> -->
         <!-- LEFT -->
-        <!-- <mesh filename="../allegro/meshes/allegro/link_12.0_left.obj" /> -->
+        <mesh filename="../allegro/meshes/allegro/link_12.0_left.obj" />
       </geometry>
       <material name="black">
         <color rgba=".2 .2 .2 1"/>
       </material>
+      <origin rpy="3.1415926 0 0" xyz="0 0 0"/>
     </visual>
     <collision>
       <geometry>
         <box size="0.0358 0.034 0.0455"/>
       </geometry>
       <!-- RIGHT -->
-      <origin rpy="0 0 0" xyz="-0.0179 0.009 0.0145"/>
+      <!-- <origin rpy="0 0 0" xyz="-0.0179 0.009 0.0145"/> -->
       <!-- LEFT -->
+      <origin rpy="3.1415926 0 0" xyz="-0.0179 0.009 0.0145"/>
     </collision>
   </link>
   <joint name="joint_l_12.0" type="revolute">
-    <axis xyz="-1 0 0"/>
+    <axis xyz="1 0 0"/>
     <limit effort="0" lower="0.263" upper="1.396" velocity="10"/>
     <parent link="base_link_lhand"/>
     <child link="link_l12.0"/>
-    <origin rpy="0 -1.65806278845 -1.5707963259" xyz="-0.0182 0.019333 -0.045987"/>
+    <origin rpy="0 -1.65806278845 1.5707963259" xyz="-0.0182 -0.019333 -0.045987"/>
   </joint>
   <link name="link_l13.0">
     <!-- <inertial>
@@ -2528,14 +2530,14 @@
     </collision>
   </link>
   <joint name="joint_l_13.0" type="revolute">
-    <axis xyz="0 0 1"/>
+    <axis xyz="0 0 -1"/>
     <limit effort="0" lower="-0.105" upper="1.163" velocity="10"/>
     <parent link="link_l12.0"/>
     <child link="link_l13.0"/>
     <!-- RIGHT -->
-    <origin xyz="-0.027 0.005 0.0399"/>
+    <!-- <origin xyz="-0.027 0.005 0.0399"/> -->
     <!-- LEFT -->
-    <!-- <origin xyz="-0.027 -0.005 0.0399"/> -->
+    <origin xyz="-0.027 -0.005 0.0399"/>
   </joint>
   <link name="link_l14.0">
     <!-- <inertial>

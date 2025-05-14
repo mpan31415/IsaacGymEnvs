@@ -163,10 +163,9 @@ class AllegroFrankaTwoArmsBase(VecTask):
 
         self.num_keypoints = len(self.keypoints_offsets)
 
-        # allegro fingertip links
-        # same order as the loaded asset by gymapi (index, middle, ring, thumb)
-        self.allegro_fingertips = ["link_l15.0", "link_l7.0", "link_l11.0", "link_l3.0",    # left hand
-                                   "link_3.0", "link_15.0", "link_7.0", "link_11.0"]        # right hand
+        # allegro fingertip links, order = {index, middle, ring, thumb}
+        self.allegro_fingertips = ["link_l11.0", "link_l7.0", "link_l3.0", "link_l15.0",    # left hand
+                                   "link_3.0", "link_7.0", "link_11.0", "link_15.0"]        # right hand
         self.fingertip_offsets = np.array(
             [[0.05, 0.005, 0], [0.05, 0.005, 0], [0.05, 0.005, 0], [0.06, 0.005, 0]], dtype=np.float32
         )
@@ -271,10 +270,13 @@ class AllegroFrankaTwoArmsBase(VecTask):
         self.hand_arm_default_dof_pos = torch.zeros(
             [self.num_arms, self.num_hand_arm_dofs], dtype=torch.float, device=self.device
         )
-
-        franka_home_pos = torch.tensor([0.0, -math.pi/8, 0.0, -5*math.pi/8, 0.0, math.pi/2, math.pi/4])         # home position
-        self.hand_arm_default_dof_pos[0, :7] = franka_home_pos
-        self.hand_arm_default_dof_pos[1, :7] = franka_home_pos
+        
+        # define default position for both arms separately
+        # left arm: 0, right arm: 1
+        left_franka_default_pos = torch.tensor([math.pi/8, -math.pi/4, 0.0, -7*math.pi/8, 0.0, 7*math.pi/8, -math.pi/4])
+        right_franka_default_pos = torch.tensor([-math.pi/8, -math.pi/4, 0.0, -7*math.pi/8, 0.0, 7*math.pi/8, 3*math.pi/4])
+        self.hand_arm_default_dof_pos[0, :7] = left_franka_default_pos
+        self.hand_arm_default_dof_pos[1, :7] = right_franka_default_pos
 
         self.pos_noise_coeff = torch.zeros_like(self.hand_arm_default_dof_pos, device=self.device)
         self.pos_noise_coeff[:, 0:7] = self.reset_dof_pos_noise_arm
