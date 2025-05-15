@@ -303,10 +303,10 @@ class AllegroFrankaTwoArmsBase(VecTask):
         self.set_actor_root_state_object_indices: List[Tensor] = []
 
         self.prev_targets = torch.zeros(
-            (self.num_envs, self.num_arms * self.num_hand_arm_dofs), dtype=torch.float, device=self.device
+            (self.num_envs, self.num_base_dofs + self.num_arms * self.num_hand_arm_dofs), dtype=torch.float, device=self.device
         )
         self.cur_targets = torch.zeros(
-            (self.num_envs, self.num_arms * self.num_hand_arm_dofs), dtype=torch.float, device=self.device
+            (self.num_envs, self.num_base_dofs + self.num_arms * self.num_hand_arm_dofs), dtype=torch.float, device=self.device
         )
 
         self.global_indices = torch.arange(self.num_envs * 3, dtype=torch.int32, device=self.device).view(
@@ -862,6 +862,8 @@ class AllegroFrankaTwoArmsBase(VecTask):
 
         reward = fingertip_delta_rew + lifting_rew + lift_bonus_rew + keypoint_rew + bonus_rew
 
+        print("Average reward across all envs: ", reward.mean().item())
+
         self.rew_buf[:] = reward
 
         resets = self._compute_resets(is_success)
@@ -1265,8 +1267,8 @@ class AllegroFrankaTwoArmsBase(VecTask):
         allegro_pos = self.hand_arm_default_dof_pos + self.pos_noise_coeff * rand_delta
 
         self.arm_hand_dof_pos[env_ids, ...] = allegro_pos
-        self.prev_targets[env_ids, ...] = allegro_pos
-        self.cur_targets[env_ids, ...] = allegro_pos
+        self.prev_targets[env_ids, self.num_base_dofs:] = allegro_pos
+        self.cur_targets[env_ids, self.num_base_dofs:] = allegro_pos
 
         rand_vel_floats = torch_rand_float(
             -1.0, 1.0, (len(env_ids), self.num_hand_arm_dofs * self.num_arms), device=self.device
@@ -1332,17 +1334,17 @@ class AllegroFrankaTwoArmsBase(VecTask):
             num_dofs: int = self.num_hand_arm_dofs * self.num_arms
 
             # target position control for the hand DOFs
-            self.cur_targets[..., :num_dofs] = scale(
+            self.cur_targets[..., self.num_base_dofs:] = scale(
                 actions[..., :num_dofs],
                 self.arm_hand_dof_lower_limits[:num_dofs],
                 self.arm_hand_dof_upper_limits[:num_dofs],
             )
-            self.cur_targets[..., :num_dofs] = (
-                self.act_moving_average * self.cur_targets[..., :num_dofs]
-                + (1.0 - self.act_moving_average) * self.prev_targets[..., :num_dofs]
+            self.cur_targets[..., self.num_base_dofs:] = (
+                self.act_moving_average * self.cur_targets[..., self.num_base_dofs:]
+                + (1.0 - self.act_moving_average) * self.prev_targets[..., self.num_base_dofs:]
             )
-            self.cur_targets[..., :num_dofs] = tensor_clamp(
-                self.cur_targets[..., :num_dofs],
+            self.cur_targets[..., self.num_base_dofs:] = tensor_clamp(
+                self.cur_targets[..., self.num_base_dofs:],
                 self.arm_hand_dof_lower_limits[:num_dofs],
                 self.arm_hand_dof_upper_limits[:num_dofs],
             )
