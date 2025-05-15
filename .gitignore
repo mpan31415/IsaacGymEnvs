@@ -33,12 +33,10 @@ outputs/
 /isaacgymenvs/wandb
 
 /assets/urdf/franka_description_tmr/.docker
-/assets/urdf/franka_description_tmr/allegro
 /assets/urdf/franka_description_tmr/end_effectors
 /assets/urdf/franka_description_tmr/extras
 /assets/urdf/franka_description_tmr/launch
 /assets/urdf/franka_description_tmr/meshes
-/assets/urdf/franka_description_tmr/meshes_obj
 /assets/urdf/franka_description_tmr/robots
 /assets/urdf/franka_description_tmr/rviz
 /assets/urdf/franka_description_tmr/scripts

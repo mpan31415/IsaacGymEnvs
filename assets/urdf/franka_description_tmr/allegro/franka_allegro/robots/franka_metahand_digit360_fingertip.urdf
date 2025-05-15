@@ -1,0 +1,922 @@
+<?xml version="1.0" ?>
+<robot name="panda" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <material name="black">
+    <color rgba="0.1 0.1 0.1 1.0"/>
+  </material>
+  <material name="blue">
+    <color rgba="0.0 0.0 0.8 1.0"/>
+  </material>
+  <material name="green">
+    <color rgba="0.0 0.8 0.0 1.0"/>
+  </material>
+  <material name="grey">
+    <color rgba="0.2 0.2 0.2 1.0"/>
+  </material>
+  <material name="orange">
+    <color rgba="1.0 0.4235294117647059 0.0392156862745098 1.0"/>
+  </material>
+  <material name="brown">
+    <color rgba="0.8705882352941177 0.8117647058823529 0.7647058823529411 1.0"/>
+  </material>
+  <material name="red">
+    <color rgba="0.8 0.0 0.0 1.0"/>
+  </material>
+  <material name="white">
+    <color rgba="1.0 1.0 1.0 1.0"/>
+  </material>
+  
+  <link name="panda_link0">
+    <visual>
+      <geometry>
+        <mesh filename="package://franka_allegro/meshes/visual/link0.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://franka_allegro/meshes/collision/link0.obj"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="panda_link1">
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 -0.04 -0.05"/>
+       <mass value="2.7"/>
+       <inertia ixx="0.1" ixy="0" ixz="0" iyy="0.1" iyz="0" izz="0.1"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://franka_allegro/meshes/visual/link1.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://franka_allegro/meshes/collision/link1.obj"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="panda_joint1" type="revolute">
+    <safety_controller k_position="100.0" k_velocity="40.0" soft_lower_limit="-2.8973" soft_upper_limit="2.8973"/>
+    <origin rpy="0 0 0" xyz="0 0 0.333"/>
+    <parent link="panda_link0"/>
+    <child link="panda_link1"/>
+    <axis xyz="0 0 1"/>
+    <dynamics damping="10.0"/>
+    <limit effort="87" lower="-2.8973" upper="2.8973" velocity="2.1750"/>
+  </joint>
+  <link name="panda_link2">
+    <visual>
+      <geometry>
+        <mesh filename="package://franka_allegro/meshes/visual/link2.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://franka_allegro/meshes/collision/link2.obj"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="panda_joint2" type="revolute">
+    <safety_controller k_position="100.0" k_velocity="40.0" soft_lower_limit="-1.7628" soft_upper_limit="1.7628"/>
+    <origin rpy="-1.57079632679 0 0" xyz="0 0 0"/>
+    <parent link="panda_link1"/>
+    <child link="panda_link2"/>
+    <axis xyz="0 0 1"/>
+    <dynamics damping="10.0"/>
+    <limit effort="87" lower="-1.7628" upper="1.7628" velocity="2.1750"/>
+  </joint>
+  <link name="panda_link3">
+    <visual>
+      <geometry>
+        <mesh filename="package://franka_allegro/meshes/visual/link3.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://franka_allegro/meshes/collision/link3.obj"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="panda_joint3" type="revolute">
+    <safety_controller k_position="100.0" k_velocity="40.0" soft_lower_limit="-2.8973" soft_upper_limit="2.8973"/>
+    <origin rpy="1.57079632679 0 0" xyz="0 -0.316 0"/>
+    <parent link="panda_link2"/>
+    <child link="panda_link3"/>
+    <axis xyz="0 0 1"/>
+    <dynamics damping="10.0"/>
+    <limit effort="87" lower="-2.8973" upper="2.8973" velocity="2.1750"/>
+  </joint>
+  <link name="panda_link4">
+    <visual>
+      <geometry>
+        <mesh filename="package://franka_allegro/meshes/visual/link4.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://franka_allegro/meshes/collision/link4.obj"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="panda_joint4" type="revolute">
+    <safety_controller k_position="100.0" k_velocity="40.0" soft_lower_limit="-3.0718" soft_upper_limit="-0.0698"/>
+    <origin rpy="1.57079632679 0 0" xyz="0.0825 0 0"/>
+    <parent link="panda_link3"/>
+    <child link="panda_link4"/>
+    <axis xyz="0 0 1"/>    
+    <dynamics damping="10.0"/>
+    <limit effort="87" lower="-3.0718" upper="-0.0698" velocity="2.1750"/>
+    <!-- something is weird with this joint limit config
+    <dynamics damping="10.0"/>
+    <limit effort="87" lower="-3.0" upper="0.087" velocity="2.1750"/>  -->
+  </joint>
+  <link name="panda_link5">
+    <visual>
+      <geometry>
+        <mesh filename="package://franka_allegro/meshes/visual/link5.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://franka_allegro/meshes/collision/link5.obj"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="panda_joint5" type="revolute">
+    <safety_controller k_position="100.0" k_velocity="40.0" soft_lower_limit="-2.8973" soft_upper_limit="2.8973"/>
+    <origin rpy="-1.57079632679 0 0" xyz="-0.0825 0.384 0"/>
+    <parent link="panda_link4"/>
+    <child link="panda_link5"/>
+    <axis xyz="0 0 1"/>
+    <dynamics damping="10.0"/>
+    <limit effort="12" lower="-2.8973" upper="2.8973" velocity="2.6100"/>
+  </joint>
+  <link name="panda_link6">
+    <visual>
+      <geometry>
+        <mesh filename="package://franka_allegro/meshes/visual/link6.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://franka_allegro/meshes/collision/link6.obj"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="panda_joint6" type="revolute">
+    <safety_controller k_position="100.0" k_velocity="40.0" soft_lower_limit="-0.0175" soft_upper_limit="3.7525"/>
+    <origin rpy="1.57079632679 0 0" xyz="0 0 0"/>
+    <parent link="panda_link5"/>
+    <child link="panda_link6"/>
+    <axis xyz="0 0 1"/>
+    <dynamics damping="10.0"/>
+    <limit effort="12" lower="-0.0175" upper="3.7525" velocity="2.6100"/>
+    <!-- <dynamics damping="10.0"/>
+    <limit effort="12" lower="-0.0873" upper="3.0" velocity="2.6100"/> -->
+  </joint>
+  <link name="panda_link7">
+    <visual>
+      <geometry>
+        <mesh filename="package://franka_allegro/meshes/visual/link7.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://franka_allegro/meshes/collision/link7.obj"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="panda_joint7" type="revolute">
+    <safety_controller k_position="100.0" k_velocity="40.0" soft_lower_limit="-2.8973" soft_upper_limit="2.8973"/>
+    <origin rpy="1.57079632679 0 0" xyz="0.088 0 0"/>
+    <parent link="panda_link6"/>
+    <child link="panda_link7"/>
+    <axis xyz="0 0 1"/>
+    <dynamics damping="5.0"/>
+    <limit effort="12" lower="-2.8973" upper="2.8973" velocity="2.6100"/>
+  </joint>
+  <!--
+  <link name="panda_link8"/>
+  <joint name="panda_joint8" type="fixed">
+    <origin rpy="0 0 0" xyz="0 0 0.107"/>
+    <parent link="panda_link7"/>
+    <child link="panda_link8"/>
+    <axis xyz="0 0 0"/>
+  </joint>
+  Removing this joint seems to help with some stability things
+  -->
+  
+  <joint name="panda_hand_joint" type="fixed">
+    <parent link="panda_link7"/>
+    <child link="allegro_mount"/>
+    <origin rpy="0 0 0.0" xyz="0 0 0.107"/>
+  </joint>
+
+  <link name="allegro_mount">
+    <inertial>
+      <mass value="0.05"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <inertia ixx="1e-4" ixy="0" ixz="0" iyy="1e-4" iyz="0" izz="1e-4"/>
+    </inertial>
+    <visual>
+      <!-- <origin xyz="-0.0425 -0.0425 0" rpy="0 0 0" /> -->
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://franka_allegro/meshes/mounts/allegro_mount.obj"/>
+      </geometry>
+      <material name="color_j7"/>
+    </visual>
+    <collision>
+      <!-- <origin xyz="-0.0425 -0.0425 0" rpy="0 0 0" /> -->
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://franka_allegro/meshes/mounts/allegro_mount.obj"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="allegro_mount_joint" type="fixed">
+    <!-- <origin xyz="0.065 0 0.0275" rpy="0 1.57 0" /> -->
+    <origin rpy="0.0 0.0 -0.785" xyz="0.0 0 0.11"/>
+    <parent link="allegro_mount"/>
+    <child link="base_link"/>
+  </joint>
+
+   <link name="base_link">
+    <visual>
+      <geometry>
+        <mesh filename="allegro/meshes/allegro/base_link.obj"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0 "/>
+      <material name="black">
+        <color rgba="0.2 0.2 0.2 1"/>
+      </material>
+    </visual>
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0.0475"/>
+      <mass value="0.4154"/>
+      <inertia ixx="1e-4" ixy="0.0" ixz="0.0" iyy="1e-4" iyz="0.0" izz="1e-4"/>
+    </inertial>
+  </link>
+  <link name="palm_reskin_link">
+    <visual>
+      <geometry>
+        <mesh filename="allegro/meshes/reskin/reskin_palm_pad.obj" scale="0.001 0.001 0.004"/>
+      </geometry>
+      <origin rpy="1.5707963259 0 1.5707963259" xyz="0 0 0 "/>
+      <material name="grey">
+        <color rgba="0.4 0.4 0.4 1"/>
+      </material>
+    </visual>
+  </link>
+  <joint name="palm_reskin_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="palm_reskin_link"/>
+    <origin rpy="0 0 0" xyz="0.0175 -0.0457 -0.041"/>
+  </joint>
+  <!-- [LINK 0, 4, 8] -->
+  <link name="link_0.0">
+    <visual>
+      <geometry>
+        <mesh filename="allegro/meshes/allegro/link_0.0.obj"/>
+      </geometry>
+      <material name="black">
+        <color rgba=".2 .2 .2 1"/>
+      </material>
+    </visual>
+    <inertial>
+      <mass value="0.0119"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <inertia ixx="1.01666658333e-06" ixy="0.0" ixz="0.0" iyy="6.47677333333e-07" iyz="0.0" izz="1.01666658333e-06"/>
+    </inertial>
+  </link>
+  <joint name="joint_0.0" type="revolute">
+    <axis xyz="0 0 1"/>
+    <limit effort="0.35" lower="-0.47" upper="0.47" velocity="6.283"/>
+    <parent link="base_link"/>
+    <child link="link_0.0"/>
+    <origin rpy="-0.08726646254999999 0 0" xyz="0 0.0435 -0.001542"/>
+  </joint>
+  <!-- [LINK 1, 5, 9] -->
+  <link name="link_1.0">
+    <visual>
+      <geometry>
+        <mesh filename="allegro/meshes/allegro/link_1.0.obj"/>
+      </geometry>
+      <material name="black">
+        <color rgba=".2 .2 .2 1"/>
+      </material>
+    </visual>
+    <inertial>
+      <mass value="0.065"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <inertia ixx="7.95654166667e-05" ixy="1.7199e-05" ixz="8.75875e-06" iyy="2.47088833333e-05" iyz="2.413125e-05" izz="7.95654166667e-05"/>
+    </inertial>
+  </link>
+  <joint name="joint_1.0" type="revolute">
+    <limit effort="0.35" lower="-0.16" upper="1.0899999999999999" velocity="6.283"/>
+    <axis xyz="0 1 0"/>
+    <parent link="link_0.0"/>
+    <child link="link_1.0"/>
+    <origin xyz="0 0 0.0164"/>
+  </joint>
+  <!-- [LINK 2, 6, 10]-->
+  <link name="link_2.0">
+    <visual>
+      <geometry>
+        <mesh filename="allegro/meshes/allegro/link_2.0.obj"/>
+      </geometry>
+      <material name="black">
+        <color rgba=".2 .2 .2 1"/>
+      </material>
+    </visual>
+    <inertial>
+      <mass value="0.0355"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <inertia ixx="2.63979183333e-05" ixy="6.67968e-06" ixz="4.783625e-06" iyy="1.34948516667e-05" iyz="9.372e-06" izz="2.63979183333e-05"/>
+    </inertial>
+  </link>
+  <joint name="joint_2.0" type="revolute">
+    <axis xyz="0 1 0"/>
+    <limit effort="0.35" lower="-0.17400000000000002" upper="0.87" velocity="6.283"/>
+    <parent link="link_1.0"/>
+    <child link="link_2.0"/>
+    <origin xyz="0 0 0.054"/>
+  </joint>
+  <!-- [LINK 3, 7, 11] -->
+  <link name="link_3.0">
+    <visual>
+      <geometry>
+        <mesh filename="allegro/meshes/allegro/link_3.0.obj"/>
+      </geometry>
+      <material name="black">
+        <color rgba=".2 .2 .2 1"/>
+      </material>
+    </visual>
+    <inertial>
+      <mass value="0.0096"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <inertia ixx="4.701248e-06" ixy="1.255968e-06" ixz="1.2936e-06" iyy="3.649312e-06" iyz="1.7622e-06" izz="4.701248e-06"/>
+    </inertial>
+  </link>
+  <joint name="joint_3.0" type="revolute">
+    <axis xyz="0 1 0"/>
+    <limit effort="0.35" lower="-0.17" upper="0.8" velocity="6.283"/>
+    <parent link="link_2.0"/>
+    <child link="link_3.0"/>
+    <origin xyz="0 0 0.0384"/>
+  </joint>
+  <!-- [FINGER TIP] -->
+  <link name="link_3.0_tip">
+    <visual>
+      <geometry>
+        <mesh filename="allegro/meshes/digit_centered/digitv2.obj"/>
+      </geometry>
+      <material name="white">
+        <color rgba=".9 .9 .9 1"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="allegro/meshes/digit_centered/digitv2.obj"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.0168"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <inertia ixx="9.68e-07" ixy="0" ixz="0" iyy="9.68e-07" iyz="0" izz="9.68e-07"/>
+    </inertial>
+  </link>
+  <joint name="joint_3_tip" type="fixed">
+    <parent link="link_3.0"/>
+    <child link="link_3.0_tip"/>
+    <origin rpy="0 0 0" xyz="0 0 0.0147"/>
+  </joint>
+  <link name="reskin_link_1.0a">
+    <visual>
+      <geometry>
+        <mesh filename="allegro/meshes/reskin/reskin_finger_pad.obj" scale="0.001 0.001 0.002"/>
+      </geometry>
+      <origin rpy="-1.5707963259 0 -1.5707963259" xyz="0 0 0"/>
+      <material name="grey">
+        <color rgba="0.4 0.4 0.4 1"/>
+      </material>
+    </visual>
+  </link>
+  <joint name="reskin_joint_1a" type="fixed">
+    <parent link="link_1.0"/>
+    <child link="reskin_link_1.0a"/>
+    <origin rpy="0 0 0" xyz="0.0118 0.009 0.022"/>
+  </joint>
+  <link name="reskin_link_1.0b">
+    <visual>
+      <geometry>
+        <mesh filename="allegro/meshes/reskin/reskin_finger_pad.obj" scale="0.001 0.001 0.002"/>
+      </geometry>
+      <origin rpy="-1.5707963259 0 -1.5707963259" xyz="0 0 0"/>
+      <material name="grey">
+        <color rgba="0.4 0.4 0.4 1"/>
+      </material>
+    </visual>
+  </link>
+  <joint name="reskin_joint_1b" type="fixed">
+    <parent link="link_1.0"/>
+    <child link="reskin_link_1.0b"/>
+    <origin rpy="0 0 0" xyz="0.0118 0.009 0.053"/>
+  </joint>
+  <link name="reskin_link_2.0">
+    <visual>
+      <geometry>
+        <mesh filename="allegro/meshes/reskin/reskin_finger_pad.obj" scale="0.001 0.001 0.002"/>
+      </geometry>
+      <origin rpy="-1.5707963259 0 -1.5707963259" xyz="0 0 0"/>
+      <material name="grey">
+        <color rgba="0.4 0.4 0.4 1"/>
+      </material>
+    </visual>
+  </link>
+  <joint name="reskin_joint_2" type="fixed">
+    <parent link="link_2.0"/>
+    <child link="reskin_link_2.0"/>
+    <origin rpy="0 0 0" xyz="0.0118 0.009 0.0375"/>
+  </joint>
+  <!-- [LINK 0, 4, 8] -->
+  <link name="link_4.0">
+    <visual>
+      <geometry>
+        <mesh filename="allegro/meshes/allegro/link_0.0.obj"/>
+      </geometry>
+      <material name="black">
+        <color rgba=".2 .2 .2 1"/>
+      </material>
+    </visual>
+    <inertial>
+      <mass value="0.0119"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <inertia ixx="1.01666658333e-06" ixy="0.0" ixz="0.0" iyy="6.47677333333e-07" iyz="0.0" izz="1.01666658333e-06"/>
+    </inertial>
+  </link>
+  <joint name="joint_4.0" type="revolute">
+    <axis xyz="0 0 1"/>
+    <limit effort="0.35" lower="-0.47" upper="0.47" velocity="6.283"/>
+    <parent link="base_link"/>
+    <child link="link_4.0"/>
+    <origin rpy="0.0 0 0" xyz="0 0 0.0007"/>
+  </joint>
+  <!-- [LINK 1, 5, 9] -->
+  <link name="link_5.0">
+    <visual>
+      <geometry>
+        <mesh filename="allegro/meshes/allegro/link_1.0.obj"/>
+      </geometry>
+      <material name="black">
+        <color rgba=".2 .2 .2 1"/>
+      </material>
+    </visual>
+    <inertial>
+      <mass value="0.065"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <inertia ixx="7.95654166667e-05" ixy="1.7199e-05" ixz="8.75875e-06" iyy="2.47088833333e-05" iyz="2.413125e-05" izz="7.95654166667e-05"/>
+    </inertial>
+  </link>
+  <joint name="joint_5.0" type="revolute">
+    <limit effort="0.35" lower="-0.16" upper="1.0899999999999999" velocity="6.283"/>
+    <axis xyz="0 1 0"/>
+    <parent link="link_4.0"/>
+    <child link="link_5.0"/>
+    <origin xyz="0 0 0.0164"/>
+  </joint>
+  <!-- [LINK 2, 6, 10]-->
+  <link name="link_6.0">
+    <visual>
+      <geometry>
+        <mesh filename="allegro/meshes/allegro/link_2.0.obj"/>
+      </geometry>
+      <material name="black">
+        <color rgba=".2 .2 .2 1"/>
+      </material>
+    </visual>
+    <inertial>
+      <mass value="0.0355"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <inertia ixx="2.63979183333e-05" ixy="6.67968e-06" ixz="4.783625e-06" iyy="1.34948516667e-05" iyz="9.372e-06" izz="2.63979183333e-05"/>
+    </inertial>
+  </link>
+  <joint name="joint_6.0" type="revolute">
+    <axis xyz="0 1 0"/>
+    <limit effort="0.35" lower="-0.17400000000000002" upper="0.87" velocity="6.283"/>
+    <parent link="link_5.0"/>
+    <child link="link_6.0"/>
+    <origin xyz="0 0 0.054"/>
+  </joint>
+  <!-- [LINK 3, 7, 11] -->
+  <link name="link_7.0">
+    <visual>
+      <geometry>
+        <mesh filename="allegro/meshes/allegro/link_3.0.obj"/>
+      </geometry>
+      <material name="black">
+        <color rgba=".2 .2 .2 1"/>
+      </material>
+    </visual>
+    <inertial>
+      <mass value="0.0096"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <inertia ixx="4.701248e-06" ixy="1.255968e-06" ixz="1.2936e-06" iyy="3.649312e-06" iyz="1.7622e-06" izz="4.701248e-06"/>
+    </inertial>
+  </link>
+  <joint name="joint_7.0" type="revolute">
+    <axis xyz="0 1 0"/>
+    <limit effort="0.35" lower="-0.17" upper="0.8" velocity="6.283"/>
+    <parent link="link_6.0"/>
+    <child link="link_7.0"/>
+    <origin xyz="0 0 0.0384"/>
+  </joint>
+  <!-- [FINGER TIP] -->
+  <link name="link_7.0_tip">
+    <visual>
+      <geometry>
+        <mesh filename="allegro/meshes/digit_centered/digitv2.obj"/>
+      </geometry>
+      <material name="white">
+        <color rgba=".9 .9 .9 1"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="allegro/meshes/digit_centered/digitv2.obj"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.0168"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <inertia ixx="9.68e-07" ixy="0" ixz="0" iyy="9.68e-07" iyz="0" izz="9.68e-07"/>
+    </inertial>
+  </link>
+  <joint name="joint_7_tip" type="fixed">
+    <parent link="link_7.0"/>
+    <child link="link_7.0_tip"/>
+    <origin rpy="0 0 0" xyz="0 0 0.0147"/>
+  </joint>
+  <link name="reskin_link_5.0a">
+    <visual>
+      <geometry>
+        <mesh filename="allegro/meshes/reskin/reskin_finger_pad.obj" scale="0.001 0.001 0.002"/>
+      </geometry>
+      <origin rpy="-1.5707963259 0 -1.5707963259" xyz="0 0 0"/>
+      <material name="grey">
+        <color rgba="0.4 0.4 0.4 1"/>
+      </material>
+    </visual>
+  </link>
+  <joint name="reskin_joint_5a" type="fixed">
+    <parent link="link_5.0"/>
+    <child link="reskin_link_5.0a"/>
+    <origin rpy="0 0 0" xyz="0.0118 0.009 0.022"/>
+  </joint>
+  <link name="reskin_link_5.0b">
+    <visual>
+      <geometry>
+        <mesh filename="allegro/meshes/reskin/reskin_finger_pad.obj" scale="0.001 0.001 0.002"/>
+      </geometry>
+      <origin rpy="-1.5707963259 0 -1.5707963259" xyz="0 0 0"/>
+      <material name="grey">
+        <color rgba="0.4 0.4 0.4 1"/>
+      </material>
+    </visual>
+  </link>
+  <joint name="reskin_joint_5b" type="fixed">
+    <parent link="link_5.0"/>
+    <child link="reskin_link_5.0b"/>
+    <origin rpy="0 0 0" xyz="0.0118 0.009 0.053"/>
+  </joint>
+  <link name="reskin_link_6.0">
+    <visual>
+      <geometry>
+        <mesh filename="allegro/meshes/reskin/reskin_finger_pad.obj" scale="0.001 0.001 0.002"/>
+      </geometry>
+      <origin rpy="-1.5707963259 0 -1.5707963259" xyz="0 0 0"/>
+      <material name="grey">
+        <color rgba="0.4 0.4 0.4 1"/>
+      </material>
+    </visual>
+  </link>
+  <joint name="reskin_joint_6" type="fixed">
+    <parent link="link_6.0"/>
+    <child link="reskin_link_6.0"/>
+    <origin rpy="0 0 0" xyz="0.0118 0.009 0.0375"/>
+  </joint>
+  <!-- [LINK 0, 4, 8] -->
+  <link name="link_8.0">
+    <visual>
+      <geometry>
+        <mesh filename="allegro/meshes/allegro/link_0.0.obj"/>
+      </geometry>
+      <material name="black">
+        <color rgba=".2 .2 .2 1"/>
+      </material>
+    </visual>
+    <inertial>
+      <mass value="0.0119"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <inertia ixx="1.01666658333e-06" ixy="0.0" ixz="0.0" iyy="6.47677333333e-07" iyz="0.0" izz="1.01666658333e-06"/>
+    </inertial>
+  </link>
+  <joint name="joint_8.0" type="revolute">
+    <axis xyz="0 0 1"/>
+    <limit effort="0.35" lower="-0.47" upper="0.47" velocity="6.283"/>
+    <parent link="base_link"/>
+    <child link="link_8.0"/>
+    <origin rpy="0.08726646254999999 0 0" xyz="0 -0.0435 -0.001542"/>
+  </joint>
+  <!-- [LINK 1, 5, 9] -->
+  <link name="link_9.0">
+    <visual>
+      <geometry>
+        <mesh filename="allegro/meshes/allegro/link_1.0.obj"/>
+      </geometry>
+      <material name="black">
+        <color rgba=".2 .2 .2 1"/>
+      </material>
+    </visual>
+    <inertial>
+      <mass value="0.065"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <inertia ixx="7.95654166667e-05" ixy="1.7199e-05" ixz="8.75875e-06" iyy="2.47088833333e-05" iyz="2.413125e-05" izz="7.95654166667e-05"/>
+    </inertial>
+  </link>
+  <joint name="joint_9.0" type="revolute">
+    <limit effort="0.35" lower="-0.16" upper="1.0899999999999999" velocity="6.283"/>
+    <axis xyz="0 1 0"/>
+    <parent link="link_8.0"/>
+    <child link="link_9.0"/>
+    <origin xyz="0 0 0.0164"/>
+  </joint>
+  <!-- [LINK 2, 6, 10]-->
+  <link name="link_10.0">
+    <visual>
+      <geometry>
+        <mesh filename="allegro/meshes/allegro/link_2.0.obj"/>
+      </geometry>
+      <material name="black">
+        <color rgba=".2 .2 .2 1"/>
+      </material>
+    </visual>
+    <inertial>
+      <mass value="0.0355"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <inertia ixx="2.63979183333e-05" ixy="6.67968e-06" ixz="4.783625e-06" iyy="1.34948516667e-05" iyz="9.372e-06" izz="2.63979183333e-05"/>
+    </inertial>
+  </link>
+  <joint name="joint_10.0" type="revolute">
+    <axis xyz="0 1 0"/>
+    <limit effort="0.35" lower="-0.17400000000000002" upper="0.87" velocity="6.283"/>
+    <parent link="link_9.0"/>
+    <child link="link_10.0"/>
+    <origin xyz="0 0 0.054"/>
+  </joint>
+  <!-- [LINK 3, 7, 11] -->
+  <link name="link_11.0">
+    <visual>
+      <geometry>
+        <mesh filename="allegro/meshes/allegro/link_3.0.obj"/>
+      </geometry>
+      <material name="black">
+        <color rgba=".2 .2 .2 1"/>
+      </material>
+    </visual>
+    <inertial>
+      <mass value="0.0096"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <inertia ixx="4.701248e-06" ixy="1.255968e-06" ixz="1.2936e-06" iyy="3.649312e-06" iyz="1.7622e-06" izz="4.701248e-06"/>
+    </inertial>
+  </link>
+  <joint name="joint_11.0" type="revolute">
+    <axis xyz="0 1 0"/>
+    <limit effort="0.35" lower="-0.17" upper="0.8" velocity="6.283"/>
+    <parent link="link_10.0"/>
+    <child link="link_11.0"/>
+    <origin xyz="0 0 0.0384"/>
+  </joint>
+  <!-- [FINGER TIP] -->
+  <link name="link_11.0_tip">
+    <visual>
+      <geometry>
+        <mesh filename="allegro/meshes/digit_centered/digitv2.obj"/>
+      </geometry>
+      <material name="white">
+        <color rgba=".9 .9 .9 1"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="allegro/meshes/digit_centered/digitv2.obj"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.0168"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <inertia ixx="9.68e-07" ixy="0" ixz="0" iyy="9.68e-07" iyz="0" izz="9.68e-07"/>
+    </inertial>
+  </link>
+  <joint name="joint_11_tip" type="fixed">
+    <parent link="link_11.0"/>
+    <child link="link_11.0_tip"/>
+    <origin rpy="0 0 0" xyz="0 0 0.0147"/>
+  </joint>
+  <link name="reskin_link_9.0a">
+    <visual>
+      <geometry>
+        <mesh filename="allegro/meshes/reskin/reskin_finger_pad.obj" scale="0.001 0.001 0.002"/>
+      </geometry>
+      <origin rpy="-1.5707963259 0 -1.5707963259" xyz="0 0 0"/>
+      <material name="grey">
+        <color rgba="0.4 0.4 0.4 1"/>
+      </material>
+    </visual>
+  </link>
+  <joint name="reskin_joint_9a" type="fixed">
+    <parent link="link_9.0"/>
+    <child link="reskin_link_9.0a"/>
+    <origin rpy="0 0 0" xyz="0.0118 0.009 0.022"/>
+  </joint>
+  <link name="reskin_link_9.0b">
+    <visual>
+      <geometry>
+        <mesh filename="allegro/meshes/reskin/reskin_finger_pad.obj" scale="0.001 0.001 0.002"/>
+      </geometry>
+      <origin rpy="-1.5707963259 0 -1.5707963259" xyz="0 0 0"/>
+      <material name="grey">
+        <color rgba="0.4 0.4 0.4 1"/>
+      </material>
+    </visual>
+  </link>
+  <joint name="reskin_joint_9b" type="fixed">
+    <parent link="link_9.0"/>
+    <child link="reskin_link_9.0b"/>
+    <origin rpy="0 0 0" xyz="0.0118 0.009 0.053"/>
+  </joint>
+  <link name="reskin_link_10.0">
+    <visual>
+      <geometry>
+        <mesh filename="allegro/meshes/reskin/reskin_finger_pad.obj" scale="0.001 0.001 0.002"/>
+      </geometry>
+      <origin rpy="-1.5707963259 0 -1.5707963259" xyz="0 0 0"/>
+      <material name="grey">
+        <color rgba="0.4 0.4 0.4 1"/>
+      </material>
+    </visual>
+  </link>
+  <joint name="reskin_joint_10" type="fixed">
+    <parent link="link_10.0"/>
+    <child link="reskin_link_10.0"/>
+    <origin rpy="0 0 0" xyz="0.0118 0.009 0.0375"/>
+  </joint>
+  <!-- [LINK 12] -->
+  <link name="link_12.0">
+    <visual>
+      <geometry>
+        <mesh filename="allegro/meshes/allegro/link_12.0_right.obj"/>
+      </geometry>
+      <material name="black">
+        <color rgba=".2 .2 .2 1"/>
+      </material>
+    </visual>
+    <inertial>
+      <mass value="0.0176"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <inertia ixx="1.89273333333e-5" ixy="7.16716e-06" ixz="5.35568e-06" iyy="1.43008213333e-05" iyz="6.8068e-06" izz="1.89273333333e-05"/>
+    </inertial>
+  </link>
+  <joint name="joint_12.0" type="revolute">
+    <axis xyz="-1 0 0"/>
+    <limit effort="0.35" lower="0.263" upper="1.396" velocity="6.283"/>
+    <parent link="base_link"/>
+    <child link="link_12.0"/>
+    <origin rpy="0 -1.6580627884499999 -1.5707963259" xyz="-0.0182 0.019333 -0.045987"/>
+  </joint>
+  <!-- [LINK 13] -->
+  <link name="link_13.0">
+    <visual>
+      <geometry>
+        <mesh filename="allegro/meshes/allegro/link_13.0.obj"/>
+      </geometry>
+      <material name="black">
+        <color rgba=".2 .2 .2 1"/>
+      </material>
+    </visual>
+    <inertial>
+      <mass value="0.0119"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <inertia ixx="4.24250866667e-06" ixy="1.032087e-06" ixz="1.603525e-06" iyy="4.52362633333e-06" iyz="1.44808125e-06" izz="4.24250866667e-06"/>
+    </inertial>
+  </link>
+  <joint name="joint_13.0" type="revolute">
+    <axis xyz="0 0 1"/>
+    <limit effort="0.35" lower="-0.10499999999999998" upper="1.1629999999999998" velocity="6.283"/>
+    <parent link="link_12.0"/>
+    <child link="link_13.0"/>
+    <origin xyz="-0.027 0.005 0.0399"/>
+  </joint>
+  <!-- [LINK 14] -->
+  <link name="link_14.0">
+    <visual>
+      <geometry>
+        <mesh filename="allegro/meshes/allegro/link_14.0.obj"/>
+      </geometry>
+      <material name="black">
+        <color rgba=".2 .2 .2 1"/>
+      </material>
+    </visual>
+    <inertial>
+      <mass value="0.038"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <inertia ixx="4.30439933333e-05" ixy="9.57068e-06" ixz="5.1205e-06" iyy="1.44451933333e-05" iyz="1.342825e-05" izz="4.30439933333e-05"/>
+    </inertial>
+  </link>
+  <joint name="joint_14.0" type="revolute">
+    <axis xyz="0 1 0"/>
+    <limit effort="0.35" lower="-0.01999999999999999" upper="1.17" velocity="6.238"/>
+    <parent link="link_13.0"/>
+    <child link="link_14.0"/>
+    <origin xyz="0 0 0.0177"/>
+  </joint>
+  <!-- [LINK 15] -->
+  <link name="link_15.0">
+    <visual>
+      <geometry>
+        <mesh filename="allegro/meshes/allegro/link_15.0.obj"/>
+      </geometry>
+      <material name="black">
+        <color rgba=".2 .2 .2 1"/>
+      </material>
+    </visual>
+    <inertial>
+      <mass value="0.0388"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <inertia ixx="3.29223173333e-05" ixy="8.042076e-06" ixz="5.2283e-06" iyy="1.47493026667e-5" iyz="1.1283525e-5" izz="3.29223173333e-05"/>
+    </inertial>
+  </link>
+  <joint name="joint_15.0" type="revolute">
+    <axis xyz="0 1 0"/>
+    <limit effort="0.35" lower="-0.18000000000000002" upper="1.65" velocity="6.238"/>
+    <parent link="link_14.0"/>
+    <child link="link_15.0"/>
+    <origin xyz="0 0 0.0514"/>
+  </joint>
+  <!-- [FINGER TIP] -->
+  <link name="link_15.0_tip">
+    <visual>
+      <geometry>
+        <mesh filename="allegro/meshes/digit_centered/digitv2.obj"/>
+      </geometry>
+      <material name="white">
+        <color rgba=".9 .9 .9 1"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="allegro/meshes/digit_centered/digitv2.obj"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="joint_15_tip" type="fixed">
+    <parent link="link_15.0"/>
+    <child link="link_15.0_tip"/>
+    <origin rpy="0 0 0" xyz="0 0 0.0303"/>
+  </joint>
+  <link name="reskin_link_14.0">
+    <visual>
+      <geometry>
+        <mesh filename="allegro/meshes/reskin/reskin_finger_pad.obj" scale="0.001 0.001 0.002"/>
+      </geometry>
+      <origin rpy="-1.5707963259 0 -1.5707963259" xyz="0 0 0"/>
+      <material name="grey">
+        <color rgba="0.4 0.4 0.4 1"/>
+      </material>
+    </visual>
+  </link>
+  <joint name="reskin_joint_14" type="fixed">
+    <parent link="link_14.0"/>
+    <child link="reskin_link_14.0"/>
+    <origin rpy="0 0 0" xyz="0.0118 0.009 0.022"/>
+  </joint>
+  <link name="reskin_link_15.0">
+    <visual>
+      <geometry>
+        <mesh filename="allegro/meshes/reskin/reskin_finger_pad.obj" scale="0.001 0.001 0.002"/>
+      </geometry>
+      <origin rpy="-1.5707963259 0 -1.5707963259" xyz="0 0 0"/>
+      <material name="grey">
+        <color rgba="0.4 0.4 0.4 1"/>
+      </material>
+    </visual>
+  </link>
+  <joint name="reskin_joint_15" type="fixed">
+    <parent link="link_15.0"/>
+    <child link="reskin_link_15.0"/>
+    <origin rpy="0 0 0" xyz="0.0118 0.009 0.022"/>
+  </joint>
+
+</robot>
+
+
