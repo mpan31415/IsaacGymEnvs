@@ -273,8 +273,8 @@ class AllegroFrankaTwoArmsBase(VecTask):
         
         # define default position for both arms separately
         # left arm: 0, right arm: 1
-        left_franka_default_pos = torch.tensor([math.pi/8, -math.pi/4, 0.0, -7*math.pi/8, 0.0, 7*math.pi/8, -math.pi/4])
-        right_franka_default_pos = torch.tensor([-math.pi/8, -math.pi/4, 0.0, -7*math.pi/8, 0.0, 7*math.pi/8, 3*math.pi/4])
+        left_franka_default_pos = torch.tensor([math.pi/8, 0.0, 0.0, -5*math.pi/8, 0.0, 7*math.pi/8, -math.pi/4])
+        right_franka_default_pos = torch.tensor([-math.pi/8, 0.0, 0.0, -5*math.pi/8, 0.0, 7*math.pi/8, 3*math.pi/4])
         self.hand_arm_default_dof_pos[0, :7] = left_franka_default_pos
         self.hand_arm_default_dof_pos[1, :7] = right_franka_default_pos
 

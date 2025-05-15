@@ -13,18 +13,18 @@ env:
   # training is much harder with random forces, so we disable it here as we do for the throw task
   # forceScale: 0.0
 
-  tablePoseXOfs: 0.5
+  tablePoseXOfs: 1.0
   tablePoseYOfs: 0.0
-  tablePoseZOfs: 0.38
+  tablePoseZOfs: 0.45
 
   # EXTRAS : USEFUL FOR DEBUGGING WITH LOW COMPUTE
   
   # number of environments
-  numEnvs: 4
+  # numEnvs: 4
   
   # controls the number of objects generated in the temp directory
   randomizeObjectDimensions: True
-  withSmallCuboids: False
+  # withSmallCuboids: False
   withBigCuboids: True         # 7x7x7 = 343 objects
-  withSticks: False
+  # withSticks: False
 
