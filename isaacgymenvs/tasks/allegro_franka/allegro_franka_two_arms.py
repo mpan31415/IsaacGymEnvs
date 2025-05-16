@@ -284,7 +284,8 @@ class AllegroFrankaTwoArmsBase(VecTask):
         self.pos_noise_coeff = self.pos_noise_coeff.flatten()
         self.hand_arm_default_dof_pos = self.hand_arm_default_dof_pos.flatten()
 
-        self.arm_hand_dof_state = self.dof_state.view(self.num_envs, -1, 2)[:, : self.num_hand_arm_dofs * self.num_arms]
+        # reshape and slice the dof state tensor to get the arm and hand DOFs
+        self.arm_hand_dof_state = self.dof_state.view(self.num_envs, -1, 2)[:, self.num_base_dofs:]
         # this will have dimensions [num_envs, num_arms * num_hand_arm_dofs]
         self.arm_hand_dof_pos = self.arm_hand_dof_state[..., 0]
         self.arm_hand_dof_vel = self.arm_hand_dof_state[..., 1]
@@ -861,8 +862,6 @@ class AllegroFrankaTwoArmsBase(VecTask):
         bonus_rew = near_goal * (self.reach_goal_bonus / self.success_steps)
 
         reward = fingertip_delta_rew + lifting_rew + lift_bonus_rew + keypoint_rew + bonus_rew
-
-        print("Average reward across all envs: ", reward.mean().item())
 
         self.rew_buf[:] = reward
 

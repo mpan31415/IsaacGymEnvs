@@ -24,7 +24,7 @@ env:
   
   # controls the number of objects generated in the temp directory
   randomizeObjectDimensions: True
-  # withSmallCuboids: False
+  withSmallCuboids: False
   withBigCuboids: True         # 7x7x7 = 343 objects
-  # withSticks: False
+  withSticks: False
 
