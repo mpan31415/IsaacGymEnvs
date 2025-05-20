@@ -108,14 +108,14 @@ class AllegroFrankaTwoArmsReorientation(AllegroFrankaTwoArmsBase):
 
         # let the target be close to 1st or 2nd arm, randomly
         left_right_random = torch_rand_float(-1.0, 1.0, (len(env_ids), 1), device=self.device)
-        x_ofs = 0.75
-        x_pos = torch.where(
+        y_ofs = 0.4
+        y_pos = torch.where(
             left_right_random > 0,
-            x_ofs * torch.ones_like(left_right_random),
-            -x_ofs * torch.ones_like(left_right_random),
+            y_ofs * torch.ones_like(left_right_random),
+            -y_ofs * torch.ones_like(left_right_random),
         )
 
-        target_coords[:, 0] += x_pos.squeeze(dim=1)
+        target_coords[:, 1] += y_pos.squeeze(dim=1)
 
         self.goal_states[env_ids, 0:3] = target_coords
         self.root_state_tensor[self.goal_object_indices[env_ids], 0:3] = self.goal_states[env_ids, 0:3]

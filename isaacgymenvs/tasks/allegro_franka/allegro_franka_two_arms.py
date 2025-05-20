@@ -248,8 +248,8 @@ class AllegroFrankaTwoArmsBase(VecTask):
             self.gym.viewer_camera_look_at(self.viewer, None, cam_pos, cam_target)
 
         # volume to sample target position from
-        target_volume_origin = np.array([0, 0.0, 0.8], dtype=np.float32)
-        target_volume_extent = np.array([[-0.2, 0.2], [-0.5, 0.5], [-0.12, 0.25]], dtype=np.float32)
+        target_volume_origin = np.array([self.table_x_ofs, 0.0, 0.8], dtype=np.float32)
+        target_volume_extent = np.array([[-0.1, 0.1], [-0.1, 0.1], [-0.1, 0.2]], dtype=np.float32)
 
         self.target_volume_origin = torch.from_numpy(target_volume_origin).to(self.device).float()
         self.target_volume_extent = torch.from_numpy(target_volume_extent).to(self.device).float()
@@ -1178,22 +1178,24 @@ class AllegroFrankaTwoArmsBase(VecTask):
 
         # reset object
         table_width = 1.1
-        obj_x_ofs = table_width / 2 - 0.2
+        obj_y_ofs = table_width / 2 - 0.2
 
         left_right_random = torch_rand_float(-1.0, 1.0, (len(env_ids), 1), device=self.device)
-        x_pos = torch.where(
+        y_pos = torch.where(
             left_right_random > 0,
-            obj_x_ofs * torch.ones_like(left_right_random),
-            -obj_x_ofs * torch.ones_like(left_right_random),
+            obj_y_ofs * torch.ones_like(left_right_random),
+            -obj_y_ofs * torch.ones_like(left_right_random),
         )
 
         rand_pos_floats = torch_rand_float(-1.0, 1.0, (len(env_ids), 3), device=self.device)
         self.root_state_tensor[obj_indices] = self.object_init_state[env_ids].clone()
 
         # indices 0..2 correspond to the object position
-        self.root_state_tensor[obj_indices, 0:1] = x_pos + self.reset_position_noise_x * rand_pos_floats[:, 0:1]
+        self.root_state_tensor[obj_indices, 0:1] = (
+            self.object_init_state[env_ids, 0:1] + self.reset_position_noise_x * rand_pos_floats[:, 0:1]
+        )
         self.root_state_tensor[obj_indices, 1:2] = (
-            self.object_init_state[env_ids, 1:2] + self.reset_position_noise_y * rand_pos_floats[:, 1:2]
+            y_pos + self.reset_position_noise_y * rand_pos_floats[:, 1:2]
         )
         self.root_state_tensor[obj_indices, 2:3] = (
             self.object_init_state[env_ids, 2:3] + self.reset_position_noise_z * rand_pos_floats[:, 2:3]

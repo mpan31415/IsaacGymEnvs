@@ -144,6 +144,7 @@ envs = []
 actor_handles = []
 
 print("Creating %d environments" % num_envs)
+
 for i in range(num_envs):
     # create env
     env = gym.create_env(sim, env_lower, env_upper, num_per_row)
@@ -174,6 +175,7 @@ for i in range(num_envs):
     object_pose = object_start_pose(table_x_ofs, table_y_ofs, table_z_ofs)
     object_handle = gym.create_actor(env, object_asset, object_pose, f"object{i}", i, 0, 0)
 
+print("Finished creating %d environments" % num_envs)
 
 ###################################### RUN SIM + VIEWER ######################################
 while not gym.query_viewer_has_closed(viewer):
