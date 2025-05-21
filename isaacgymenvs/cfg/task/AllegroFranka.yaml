@@ -99,7 +99,8 @@ env:
     # high in general. But in turn this leads to smoother movements and better looking behaviors.
     # Additionally, collision shapes of fingertips are more primitive (just rough convex hulls), which
     # gives a bit more FPS.
-    frankaAllegro: "urdf/franka_description_tmr/urdf/franka_right_digit360.urdf"
+    # frankaAllegro: "urdf/franka_description_tmr/urdf/franka_right_digit360.urdf"
+    frankaAllegro: "urdf/franka_description_tmr/urdf/franka_right_digit360_simple.urdf"
 
     # This is the URDF which has more accurate collision shapes and weights.
     # I believe since the hand is much lighter, the policy has more control over the movement of both arm and
@@ -111,7 +112,8 @@ env:
     # The exercise of finding the right URDF and other parameters is left for the sim-to-real part of the project.
     # kukaAllegro: "urdf/kuka_allegro_description/kuka_allegro_v2.urdf"
 
-    assetFileNameBlock: "urdf/objects/cube_multicolor.urdf"
+    # assetFileNameBlock: "urdf/objects/cube_multicolor.urdf"
+    assetFileNameBlock: "urdf/objects/cube_multicolor_simple.urdf"
 
 task:
   randomize: False

@@ -10,6 +10,8 @@ import torch.nn as nn
 from omegaconf import OmegaConf
 from enum import Enum
 
+from isaacgym import gymapi
+
 
 class RobotType(Enum):
     FRANKA = 0
@@ -23,7 +25,8 @@ class ActionType(Enum):
 
 ###################################
 robot_type = RobotType.FRANKA
-action_type = ActionType.POLICY
+action_type = ActionType.ZERO
+num_envs = 16
 ###################################
 
 
@@ -42,7 +45,7 @@ task_cfg2 = OmegaConf.load(task_config_path2)
 task_cfg3 = OmegaConf.load(task_config_path3)
 task_cfg = OmegaConf.merge(task_cfg1, task_cfg2, task_cfg3)
 task_cfg['sim']['use_gpu_pipeline'] = False
-task_cfg['env']['numEnvs'] = 4
+task_cfg['env']['numEnvs'] = num_envs
 task_cfg['physics_engine'] = 'physx'
 task_cfg['sim']['physx']['num_subscenes'] = 4
 

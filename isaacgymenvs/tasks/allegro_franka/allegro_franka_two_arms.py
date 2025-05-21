@@ -561,6 +561,14 @@ class AllegroFrankaTwoArmsBase(VecTask):
         asset_options.angular_damping = 0.01
         asset_options.linear_damping = 0.01
 
+        # asset_options.vhacd_enabled = True
+        # asset_options.vhacd_params.convex_hull_approximation = True
+        # asset_options.vhacd_params.max_convex_hulls = 1
+        # asset_options.vhacd_params.max_num_vertices_per_ch = 16
+        # asset_options.vhacd_params.ocl_acceleration = True
+        # asset_options.vhacd_params.project_hull_vertices = False
+        # asset_options.vhacd_params.resolution = 1000000
+
         if self.physics_engine == gymapi.SIM_PHYSX:
             asset_options.use_physx_armature = True
         asset_options.default_dof_drive_mode = gymapi.DOF_MODE_POS
