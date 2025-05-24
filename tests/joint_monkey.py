@@ -35,7 +35,9 @@ asset_descriptors = [
     AssetDesc("urdf/franka_description/robots/franka_panda.urdf", True),
     AssetDesc("urdf/anymal_c/urdf/anymal.urdf", True),
     AssetDesc("urdf/franka_description_tmr/urdf/franka_right_digit360.urdf", False),
+    AssetDesc("urdf/franka_description_tmr/urdf/franka_right_digit360_simple.urdf", False),
     AssetDesc("urdf/kuka_allegro_description/kuka_allegro_touch_sensor.urdf", False),
+    AssetDesc("urdf/ur5e_allegro/robots/dual_ur5e_allegro_real_v2.urdf", False),
 ]
 
 
@@ -167,8 +169,8 @@ for i in range(num_dofs):
         print("    Upper   %f" % upper_limits[i])
 
 # set up the env grid
-num_envs = 36
-num_per_row = 6
+num_envs = 16
+num_per_row = 4
 spacing = 2.5
 env_lower = gymapi.Vec3(-spacing, 0.0, -spacing)
 env_upper = gymapi.Vec3(spacing, spacing, spacing)

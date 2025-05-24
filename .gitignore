@@ -41,3 +41,5 @@ outputs/
 /assets/urdf/franka_description_tmr/rviz
 /assets/urdf/franka_description_tmr/scripts
 /assets/urdf/franka_description_tmr/test
+
+/assets/urdf/ur5e_allegro

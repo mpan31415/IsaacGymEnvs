@@ -24,7 +24,7 @@ def object_start_pose(table_pose_dx: float, table_pose_dy: float, table_pose_dz:
 
 
 ###################################### DEFINE ASSETS ######################################
-robot_asset_file = "urdf/franka_description_tmr/urdf/franka_right_digit360.urdf"
+robot_asset_file = "urdf/ur5e_allegro/robots/dual_ur5e_allegro_real_v2.urdf"
 robot_asset_flip_visual = False
 
 table_asset_file = "urdf/table_wide.urdf"
@@ -110,10 +110,24 @@ robot_dof_states = np.zeros(num_robot_dofs, dtype=gymapi.DofState.dtype)
 robot_dof_positions = robot_dof_states['pos']
 
 # set the default positions for the franka arms
-left_franka_default_pos = [math.pi/8, 0.0, 0.0, -5*math.pi/8, 0.0, 7*math.pi/8, -math.pi/4]
-right_franka_default_pos = [-math.pi/8, 0.0, 0.0, -5*math.pi/8, 0.0, 7*math.pi/8, 3*math.pi/4]
-robot_dof_positions[12:19] = left_franka_default_pos
-robot_dof_positions[35:42] = right_franka_default_pos
+left_ur_default_pos = [-1.567662541066305,
+                        -2.4176141224303187,
+                        -1.470444917678833,
+                        -0.8341446679881592,
+                        0.894737720489502,
+                        0.08133087307214737,]
+right_ur_default_pos = [-4.674656931553976,
+                        -0.6805991691401978,
+                        1.5093582312213343,
+                        -2.377801080743307,
+                        -0.8824575583087366,
+                        -0.06327754655946904,]
+robot_dof_positions[0:6] = left_ur_default_pos
+robot_dof_positions[22:28] = right_ur_default_pos
+
+# set the default positions for the allegro hands
+left_allegro_default_pos = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+right_allegro_default_pos = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
 ############## load table ##############
 table_asset_options = gymapi.AssetOptions()

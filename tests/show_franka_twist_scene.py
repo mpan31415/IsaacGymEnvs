@@ -24,7 +24,7 @@ def object_start_pose(table_pose_dx: float, table_pose_dy: float, table_pose_dz:
 
 
 ###################################### DEFINE ASSETS ######################################
-robot_asset_file = "urdf/franka_description_tmr/urdf/franka_right_digit360.urdf"
+robot_asset_file = "urdf/franka_description_tmr/urdf/franka_right_digit360_nobase.urdf"
 robot_asset_flip_visual = False
 
 table_asset_file = "urdf/table_wide.urdf"
@@ -110,8 +110,24 @@ robot_dof_states = np.zeros(num_robot_dofs, dtype=gymapi.DofState.dtype)
 robot_dof_positions = robot_dof_states['pos']
 
 # set the default positions for the franka arms
-left_franka_default_pos = [math.pi/8, 0.0, 0.0, -5*math.pi/8, 0.0, 7*math.pi/8, -math.pi/4]
-right_franka_default_pos = [-math.pi/8, 0.0, 0.0, -5*math.pi/8, 0.0, 7*math.pi/8, 3*math.pi/4]
+# left_franka_default_pos = [math.pi/8, 0.0, 0.0, -5*math.pi/8, 0.0, 7*math.pi/8, -math.pi/4]
+# right_franka_default_pos = [-math.pi/8, 0.0, 0.0, -5*math.pi/8, 0.0, 7*math.pi/8, 3*math.pi/4]
+left_franka_default_pos = [math.pi/16, 
+                           math.pi/9, 
+                           0.0, 
+                           -9*math.pi/16, 
+                           -3*math.pi/16 + math.pi/2, 
+                           5*math.pi/8 - math.pi/64, 
+                           -math.pi
+                           ]
+right_franka_default_pos = [-math.pi/16, 
+                            math.pi/9, 
+                            0.0, 
+                            -9*math.pi/16, 
+                            3*math.pi/16 - math.pi/2, 
+                            5*math.pi/8 - math.pi/64, 
+                            -math.pi/2
+                            ]
 robot_dof_positions[12:19] = left_franka_default_pos
 robot_dof_positions[35:42] = right_franka_default_pos
 
@@ -152,7 +168,7 @@ for i in range(num_envs):
 
     # define robot pose
     robot_base_pose = gymapi.Transform()
-    robot_base_pose.p = gymapi.Vec3(0.0, 0.0, 0.0)            # origin
+    robot_base_pose.p = gymapi.Vec3(0.0, 0.0, 0.5)            # origin
     robot_base_pose.r = gymapi.Quat(0.0, 0.0, 0.0, 1.0)       # no rotation
 
     # add robot actor

@@ -11,6 +11,7 @@ import gym
 import isaacgymenvs
 from rl_games.common import env_configurations, vecenv
 from isaacgymenvs.tasks import isaacgym_task_map
+from isaacgymenvs.utils.rlgames_utils import RLGPUEnv, RLGPUAlgoObserver, MultiObserver, ComplexObsRLGPUEnv
 
 # Load config used to build the network
 # train_config_path1 = "/home/gymuser/RL/IsaacGymEnvs/isaacgymenvs/cfg/eval/AllegroFrankaPPO.yaml"
@@ -66,8 +67,9 @@ else:
     vecenv.register('RLGPU', lambda config_name, num_actors, **kwargs: RLGPUEnv(config_name, num_actors, **kwargs))
 
 # Load the checkpoint
-checkpoint_path = "/home/gymuser/RL/AllegroFrankaTwoArmsLSTMPPO_18-11-37-57/nn/last_AllegroFrankaTwoArmsLSTMPPO_ep_3000_rew__197.5_.pth"
-checkpoint = torch.load(checkpoint_path, map_location='cpu')
+checkpoints_dir = "/home/gymuser/RL/IsaacGymEnvs/isaacgymenvs/checkpoints/"
+checkpoint_name = "AllegroFrankaTwoArmsLSTMPPO_18-11-37-57/nn/last_AllegroFrankaTwoArmsLSTMPPO_ep_3000_rew__197.5_.pth"
+checkpoint = torch.load(checkpoints_dir + checkpoint_name, map_location='cpu')
 model_checkpoint_dict = checkpoint["model"]
 
 print(f"model_checkpoint_dict keys: {model_checkpoint_dict.keys()}")
